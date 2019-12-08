@@ -2,38 +2,33 @@
 #include <iostream>       // std::cout
 #include <thread>         // std::thread
 #include <mutex>          // std:mutex
+#include <unistd.h>
 
 std::mutex mtx;
 
 void kleinbuchstaben()
 {
-    mtx.lock();
     for (int a=0; a < 26; a++){
         std::cout << char(a + 97) << ' ';
     }
     std::cout << std::endl;
-    mtx.unlock();
 }
 
 void grossbuchstaben()
 {
-    mtx.lock();
     for (int b=0;b<26;b++){
         std::cout << char(b+65) << ' ';
     }
     std::cout << std::endl;
-    mtx.unlock();
 }
 
 
 void nullbiszweiundreissig()
 {
-    mtx.lock();
     for (int c=1;c<=32;c++){
         std::cout << c << ' ';
     }
     std::cout << std::endl;
-    mtx.unlock();
 }
 void print_block(int a, int b, int c, bool d){
     mtx.lock();
@@ -60,7 +55,6 @@ void Aufgabe_a(){
    zahl.detach();
    gross.detach();
 
-
 }
 void Aufgabe_b() {
     std::thread test2 (print_block,0,26,97,true);
@@ -80,14 +74,18 @@ void Aufgabe_c()
 
 int main()
 {
+    std::cout << "Hier Aufgabe A" << std::endl;
 
     Aufgabe_a();
 
+    usleep(500000);
     std::cout<< '\n';
+    std::cout << "Hier Aufgabe B" << std::endl;
 
     Aufgabe_b();
-
+    usleep(500000);
     std::cout<< '\n';
+    std::cout << "Hier Aufgabe C" << std::endl;
 
     Aufgabe_c();
 
