@@ -51,20 +51,45 @@ void print_block(int a, int b, int c, bool d){
     std::cout << std::endl;
     mtx.unlock();
 }
+void Aufgabe_a(){
+   std::thread klein (kleinbuchstaben);
+   std::thread zahl (nullbiszweiundreissig);
+   std::thread gross (grossbuchstaben);
+
+   klein.detach();
+   zahl.detach();
+   gross.detach();
+
+
+}
+void Aufgabe_b() {
+    std::thread test2 (print_block,0,26,97,true);
+    std::thread test3 (print_block,0,26,65,true);
+    std::thread test(print_block,1,33,0,false);
+
+    test2.join();
+    test3.join();
+    test.join();
+
+}
+
+void Aufgabe_c()
+{
+
+}
+
 int main()
 {
-//    std::thread klein (kleinbuchstaben);
-//    std::thread zahl (nullbiszweiundreissig);
-//    std::thread gross (grossbuchstaben);
 
+    Aufgabe_a();
 
-std::thread test2 (print_block,0,26,97,true);
-std::thread test3 (print_block,0,26,65,true);
-std::thread test(print_block,1,33,0,false);
+    std::cout<< '\n';
 
-test2.join();
-test3.join();
-test.join();
+    Aufgabe_b();
+
+    std::cout<< '\n';
+
+    Aufgabe_c();
 
     return 0;
 }
