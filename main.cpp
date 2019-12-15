@@ -1,10 +1,46 @@
 // thread example
+#include <thread>
+#include <chrono>
 #include <iostream>       // std::cout
 #include <thread>         // std::thread
 #include <mutex>          // std:mutex
-#include <unistd.h>
+#include <stdlib.h>
+#include <condition_variable>
 
+#include <string>
 std::mutex mtx;
+std::condition_variable cv;
+std::mutex cv_m;
+int sema = 0;
+bool done = false;
+
+void waits()
+{
+    std::unique_lock<std::mutex> lk(cv_m);
+    std::cout << "Waiting... \n";
+    cv.wait(lk, []{return sema == 1;});
+    std::cout << "...finished waiting. i == 1\n";
+    done = true;
+}
+
+void signals()
+{
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::cout << "Notifying falsely...\n";
+    cv.notify_one(); // waiting thread is notified with i == 0.
+    // cv.wait wakes up, checks i, and goes back to waiting
+
+    std::unique_lock<std::mutex> lk(cv_m);
+    sema = 1;
+    while (!done)
+    {
+        std::cout << "Notifying true change...\n";
+        lk.unlock();
+        cv.notify_one(); // waiting thread is notified with i == 1, cv.wait returns
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        lk.lock();
+    }
+}
 
 void kleinbuchstaben()
 {
@@ -12,6 +48,7 @@ void kleinbuchstaben()
         std::cout << char(a + 97) << ' ';
     }
     std::cout << std::endl;
+    signals();
 }
 
 void grossbuchstaben()
@@ -20,6 +57,7 @@ void grossbuchstaben()
         std::cout << char(b+65) << ' ';
     }
     std::cout << std::endl;
+
 }
 
 
@@ -29,9 +67,10 @@ void nullbiszweiundreissig()
         std::cout << c << ' ';
     }
     std::cout << std::endl;
+
 }
 void print_block(int a, int b, int c, bool d){
-    mtx.lock();
+        mtx.lock();
     for (int i=a;i<b;i++){
         if (d==true)
         {
@@ -46,6 +85,7 @@ void print_block(int a, int b, int c, bool d){
     std::cout << std::endl;
     mtx.unlock();
 }
+
 void Aufgabe_a(){
    std::thread klein (kleinbuchstaben);
    std::thread zahl (nullbiszweiundreissig);
@@ -69,25 +109,59 @@ void Aufgabe_b() {
 
 void Aufgabe_c()
 {
+std::thread klein (kleinbuchstaben);
+waits();
+
+std::thread zahl (nullbiszweiundreissig);
+waits();
+std::thread gross (grossbuchstaben);
+signals();
+klein.join();
+zahl.join();
+gross.join();
 
 }
 
 int main()
 {
-    std::cout << "Hier Aufgabe A" << std::endl;
+    int eingabe;
 
-    Aufgabe_a();
+    while(eingabe =! 0 ){
+        std::cout << "Schreiben Sie folgendes fuer die Aufgaben: \n 1 fuer Aufgabe a\n 2 fuer Aufgabe b\n 3 fuer Aufgabe c\n 4 fuer Abbrechen \n ";
+        std::cin >> eingabe;
+        switch (eingabe){
+            case 1:
+                std::cout << "Hier Aufgabe A" << std::endl;
+                Aufgabe_a();
+                std::cout<< '\n';
+                _sleep(1000);
+                continue;
+            case 2:
+                std::cout << "Hier Aufgabe B" << std::endl;
+                Aufgabe_b();
+                std::cout<< '\n';
+                _sleep(1000);
+                continue;
+            case 3:
+                std::cout << "Hier Aufgabe C" << std::endl;
+                Aufgabe_c();
+                std::cout<< '\n';
+                _sleep(1000);
+                continue;
+            case 4:
+                break;
+        }
+        break;
+    }
 
-    usleep(500000);
-    std::cout<< '\n';
-    std::cout << "Hier Aufgabe B" << std::endl;
 
-    Aufgabe_b();
-    usleep(500000);
-    std::cout<< '\n';
-    std::cout << "Hier Aufgabe C" << std::endl;
 
-    Aufgabe_c();
+
+
+
+
+
+
 
     return 0;
 }
