@@ -41,8 +41,7 @@ void signals()
         lk.lock();
     }
 }
-
-void kleinbuchstaben()
+void kleinbuchstaben1()
 {
     for (int a=0; a < 26; a++){
         std::cout << char(a + 97) << ' ';
@@ -51,15 +50,36 @@ void kleinbuchstaben()
     signals();
 }
 
+void kleinbuchstaben()
+{
+    for (int a=0; a < 26; a++){
+        std::cout << char(a + 97) << ' ';
+    }
+    std::cout << std::endl;
+}
+void grossbuchstaben1()
+{
+    for (int b=0;b<26;b++){
+        std::cout << char(b+65) << ' ';
+    }
+    std::cout << std::endl;
+}
+
 void grossbuchstaben()
 {
     for (int b=0;b<26;b++){
         std::cout << char(b+65) << ' ';
     }
     std::cout << std::endl;
-
 }
 
+void nullbiszweiundreissig1()
+{
+    for (int c=1;c<=32;c++){
+        std::cout << c << ' ';
+    }
+    std::cout << std::endl;
+}
 
 void nullbiszweiundreissig()
 {
@@ -67,7 +87,6 @@ void nullbiszweiundreissig()
         std::cout << c << ' ';
     }
     std::cout << std::endl;
-
 }
 void print_block(int a, int b, int c, bool d){
         mtx.lock();
@@ -109,16 +128,20 @@ void Aufgabe_b() {
 
 void Aufgabe_c()
 {
-std::thread klein (kleinbuchstaben);
+std::thread klein1 (kleinbuchstaben1);
 waits();
+    _sleep(200);
 
-std::thread zahl (nullbiszweiundreissig);
+std::thread zahl1 (nullbiszweiundreissig1);
 waits();
-std::thread gross (grossbuchstaben);
+    _sleep(200);
+
+std::thread gross1 (grossbuchstaben1);
 signals();
-klein.join();
-zahl.join();
-gross.join();
+
+klein1.join();
+zahl1.join();
+gross1.join();
 
 }
 
